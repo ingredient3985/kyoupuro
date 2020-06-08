@@ -1,0 +1,161 @@
+素因数分解（例）36->[2,2,3,3]
+def prime_factorize(n):
+    a = []
+    while n % 2 == 0:
+        a.append(2)
+        n //= 2
+    f = 3
+    while f * f <= n:
+        if n % f == 0:
+            a.append(f)
+            n //= f
+        else:
+            f += 2
+    if n != 1:
+        a.append(n)
+    return a
+
+ナップザックDP
+n,W=map(int,input().split())
+v,w=[],[]
+for i in range(n):
+    v_,w_=map(int,input().split())
+    v.append(v_)
+    w.append(w_)
+dp=[[0]*(W+1) for _ in range(n+1)]
+for i in range(n):
+    for j in range(W+1):
+        if j>=w[i]:
+            dp[i+1][j]=max(dp[i][j-w[i]]+v[i],dp[i][j])
+        else:
+            dp[i+1][j]=dp[i][j]
+print(dp[n][W])
+
+#nCr mod 高速
+def cmb(n,r,mod):
+    x=1
+    y=1
+    for i in range(1,r+1):
+        x=(x*(n-i+1))%mod
+        y=(y*i)%mod
+    return (x*pow(y,mod-2,mod))%mod
+
+#nCr普通
+from operator import mul
+from functools import reduce
+
+def cmb(n,r):
+    r = min(n-r,r)
+    if r == 0: return 1
+    over = reduce(mul, range(n, n - r, -1))
+    under = reduce(mul, range(1,r + 1))
+    return over // under
+    
+#gcd複数（１，２，３，４）みたいな
+def gcd(*numbers):
+    return reduce(math.gcd, numbers)
+
+
+class UnionFind:
+    def __init__(self,n):
+        #par[x]==xならxというノードが根。xに親がいない
+        self.par = [i for i in range(n+1)]
+        self.rank = [0]*(n+1) 
+    
+    def find(self,x): #xの根を検索
+        #xが根ならxを返す
+        if self.par[x] == x:
+            return x
+        else:
+
+            self.par[x] = self.find(self.par[x]) #パス圧縮
+            return self.par[x]
+
+    def unite(self,x,y):
+        #根を探す
+        x = self.find(x)
+        y = self.find(y)        
+        #木の深さを比較し、小さい方を大きい方につなげる
+        if self.rank[x] < self.rank[y]:
+            self.par[x] = y
+        else:
+            self.par[y] = x
+            if self.rank[x] == self.rank[y]:
+                self.rank[x] += 1 #rankが同じ木を繋げたとき根のランクを一つ上げる
+    
+    def same_check(self,x,y): #xとyが同じ集合に属しているか
+        return self.find(x) == self.find(y)
+n, q = map(int,input().split())
+uf = UnionFind(n)
+
+unionfindサイズ付き
+
+class UnionFind():
+    def __init__(self, n):
+        self.n = n
+        self.parents = [-1] * n
+
+    def find(self, x):
+        if self.parents[x] < 0:
+            return x
+        else:
+            self.parents[x] = self.find(self.parents[x])
+            return self.parents[x]
+
+    def union(self, x, y):
+        x = self.find(x)
+        y = self.find(y)
+
+        if x == y:
+            return
+
+        if self.parents[x] > self.parents[y]:
+            x, y = y, x
+
+        self.parents[x] += self.parents[y]
+        self.parents[y] = x
+
+    def size(self, x):
+        return -self.parents[self.find(x)]
+
+    def same(self, x, y):
+        return self.find(x) == self.find(y)
+
+    def members(self, x):
+        root = self.find(x)
+        return [i for i in range(self.n) if self.find(i) == root]
+
+    def roots(self):
+        return [i for i, x in enumerate(self.parents) if x < 0]
+
+    def group_count(self):
+        return len(self.roots())
+
+    def all_group_members(self):
+        return {r: self.members(r) for r in self.roots()}
+
+ダイグストラ
+from heapq import heappop, heappush
+INF = 10**12
+v,e,r = map(int,input().split())
+edge = [[] for _ in range(v)]
+d = [INF]*v
+for i in range(e):
+    s,t,c = map(int,input().split())
+    edge[s].append([t,c])
+d[r]=0
+q = [(d[r],r)]
+while q:
+    du,u = heappop(q)
+    for t,c in edge[u]:
+        if d[t] > du + c:
+            d[t] = du + c
+            heappush(q,(d[t],t))
+for D in d:
+    print('INF' if D == INF else D)
+
+# 部分文字列
+b = set()
+for i in range(len(s)):
+    for j in range(1,min(k+1,len(s)-i+1)):
+        b.add(s[i:i+j])
