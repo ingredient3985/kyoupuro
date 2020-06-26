@@ -1,2 +1,0 @@
-print("testdesu")
-print("tuikasita")
